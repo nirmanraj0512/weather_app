@@ -14,6 +14,7 @@ const Weather=()=> {
     const inputRef=useRef()
     const [weatherData,setWeatherData]=useState(false);
     const [alert, setAlert] = useState({ message: '', type: '' });
+    const [searchHistory, setSearchHistory] = useState([]);
 
   const showAlert = (message, type = 'info') => {
     setAlert({ message, type });
@@ -37,6 +38,13 @@ const Weather=()=> {
         "13d":snow_icon,
         "13n":snow_icon
     }
+    const updateSearchHistory = (city) => {
+        const prev = JSON.parse(localStorage.getItem('searchHistory')) || [];
+        const filtered = prev.filter(item => item.toLowerCase() !== city.toLowerCase());
+        const updated = [city, ...filtered].slice(0, 3); // max 3
+        localStorage.setItem('searchHistory', JSON.stringify(updated));
+        setSearchHistory(updated);
+      };
     const fetchWeather=async(city)=>{
         if(city===""){
             showAlert("Enter the City Name","Warning");
@@ -58,6 +66,7 @@ const Weather=()=> {
                 location:data.name,
                 icon:icon
             })
+            updateSearchHistory(data.name); 
         }
         catch(error){
             setWeatherData(false);
@@ -67,6 +76,8 @@ const Weather=()=> {
     }
     useEffect(()=>{
         fetchWeather("Mumbai");
+        const stored = JSON.parse(localStorage.getItem('searchHistory'));
+    if (stored) setSearchHistory(stored);
     },[])
 
   return (
@@ -84,7 +95,16 @@ const Weather=()=> {
             <input ref={inputRef} type="text" placeholder='Search'/>
             <img src={search} alt='' onClick={()=>fetchWeather(inputRef.current.value)}/>
         </div>
-        {/* Weath */}
+        {/* Search History */}
+      {searchHistory.length > 0 && (
+        <div className='search-history'>
+          <span>Recent:</span>
+          {searchHistory.map((city, index) => (
+            <button key={index} onClick={() => fetchWeather(city)}>{city}</button>
+          ))}
+        </div>
+      )}
+        {/* Weather */}
         {weatherData?<>
             <img src={weatherData.icon} alt="icon" className='weather-icon'/>
         <p className='temp'>{weatherData.temprature}°C</p>
