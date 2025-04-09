@@ -58,13 +58,16 @@ const Weather=()=> {
                 showAlert(data.message,"error");
                 return;
             }
+            console.log(data)
+            console.log(data.weather[0].description)
             const icon=allIcons[data.weather[0].icon||rainy]
             setWeatherData({
                 humidity:data.main.humidity,
                 windSpeed:data.wind.speed,
                 temprature:Math.floor(data.main.temp),
                 location:data.name,
-                icon:icon
+                icon:icon,
+                condition:data.weather[0].description
             })
             updateSearchHistory(data.name); 
         }
@@ -75,7 +78,7 @@ const Weather=()=> {
         }
     }
     useEffect(()=>{
-        fetchWeather("Mumbai");
+        fetchWeather("Jammu");
         const stored = JSON.parse(localStorage.getItem('searchHistory'));
     if (stored) setSearchHistory(stored);
     },[])
@@ -106,7 +109,8 @@ const Weather=()=> {
       )}
         {/* Weather */}
         {weatherData?<>
-            <img src={weatherData.icon} alt="icon" className='weather-icon'/>
+        <img src={weatherData.icon} alt="icon" className='weather-icon'/>
+        <p className='condition'>{weatherData.condition}</p>
         <p className='temp'>{weatherData.temprature}°C</p>
         <p className='location'>{weatherData.location}</p>
         <div className='weather-data'>
