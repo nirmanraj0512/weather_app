@@ -41,7 +41,7 @@ const Weather=()=> {
     const updateSearchHistory = (city) => {
         const prev = JSON.parse(localStorage.getItem('searchHistory')) || [];
         const filtered = prev.filter(item => item.toLowerCase() !== city.toLowerCase());
-        const updated = [city, ...filtered].slice(0, 3); // max 3
+        const updated = [city, ...filtered].slice(0, 5); 
         localStorage.setItem('searchHistory', JSON.stringify(updated));
         setSearchHistory(updated);
       };
